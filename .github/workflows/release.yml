@@ -1,10 +1,18 @@
 name: Release
 
-# Push a tag like v1.0.0 to build and sign the APK, publish it as a GitHub Release,
-# and update site/version.json (Cloudflare Pages redeploys from the repo).
+# Build and sign the APK, publish it as a GitHub Release, and update site/version.json
+# (Cloudflare Pages redeploys from the repo). Start it either by:
+#   - pushing a tag like v1.0.0, or
+#   - Actions tab > Release > Run workflow > type a version like 1.0.0 (creates the tag for you).
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, e.g. 1.0.0'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -19,8 +27,14 @@ jobs:
 
       - name: Derive version from tag
         id: ver
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
-          TAG="${GITHUB_REF_NAME}"
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            TAG="v${INPUT_VERSION#v}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
           VER="${TAG#v}"
           if ! [[ "$VER" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Tag must look like v1.2.3 (got $TAG)"; exit 1
@@ -33,10 +47,15 @@ jobs:
 
       - name: Read tag message (release notes)
         id: notes
+        env:
+          TAG: ${{ steps.ver.outputs.tag }}
         run: |
-          git fetch --force origin "+refs/tags/${GITHUB_REF_NAME}:refs/tags/${GITHUB_REF_NAME}"
-          NOTES="$(git for-each-ref --format='%(contents)' "refs/tags/${GITHUB_REF_NAME}" | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}')"
-          if [ -z "$NOTES" ]; then NOTES="Release ${GITHUB_REF_NAME}"; fi
+          NOTES=""
+          # If the tag already exists (tag push), its message is the release notes.
+          if git fetch --force origin "+refs/tags/${TAG}:refs/tags/${TAG}" 2>/dev/null; then
+            NOTES="$(git for-each-ref --format='%(contents)' "refs/tags/${TAG}" | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}')"
+          fi
+          if [ -z "$NOTES" ]; then NOTES="Release ${TAG}"; fi
           printf '%s' "$NOTES" > "$RUNNER_TEMP/notes.txt"
 
       - uses: actions/setup-java@v4
@@ -75,6 +94,7 @@ jobs:
         run: |
           gh release create "${{ steps.ver.outputs.tag }}" auto-cache-cleaner.apk \
             --title "Auto Cache Cleaner ${{ steps.ver.outputs.tag }}" \
+            --target "$GITHUB_SHA" \
             --notes-file "$RUNNER_TEMP/notes.txt"
 
       # Cloudflare Pages is connected to this repo, so committing version.json to main

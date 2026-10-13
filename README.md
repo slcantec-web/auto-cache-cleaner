@@ -56,6 +56,9 @@ Cloudflare dashboard > Workers & Pages > Create > Pages > **Connect to Git**, pi
 Cloudflare only serves the `site/` folder; the Android app itself is built by GitHub Actions. The app reads `https://<project>.pages.dev/version.json`, so the project name must match the URL in `app/build.gradle.kts` (default `auto-cache-cleaner`).
 
 ### 5. Release
+Easiest: on GitHub open **Actions > Release > Run workflow**, type a version such as `1.0.0` and run it. The workflow creates the tag for you.
+
+Or from a terminal:
 ```bash
 git tag -a v1.0.0 -m "First release"
 git push origin v1.0.0
