@@ -2,11 +2,17 @@
 <resources>
     <string name="app_name">Auto Cache Cleaner</string>
     <string name="tagline">Clear cache on demand. Nothing runs in the background.</string>
-    <string name="clear_cache">Clear Cache</string>
+    <string name="clear_cache">Clear this app\'s cache</string>
     <string name="open_storage_settings">Open system storage settings</string>
     <string name="cache_size_format">This app\'s cache: %1$s</string>
-    <string name="scan_apps">Scan all apps\' cache</string>
+    <string name="scan_apps">Scan apps for cache</string>
+    <string name="other_apps_section">Other apps\' cache</string>
+    <string name="other_apps_hint">See how much cache each app uses, then clear the ones you choose.</string>
+    <string name="this_app_section">This app only</string>
+    <string name="reminder_hint">Get a gentle nudge so your phone stays tidy.</string>
     <string name="app_caches_title">App cache sizes</string>
+    <string name="cache_by_app">Cache by app</string>
+    <string name="legend_item_format">%1$s · %2$s (%3$d%%)</string>
     <string name="grant_usage_access_message">To see how much cache each app uses, allow Usage access for Auto Cache Cleaner. It stays on your device.</string>
     <string name="grant_usage_access">Open Usage access settings</string>
     <string name="scanning">Scanning apps…</string>
