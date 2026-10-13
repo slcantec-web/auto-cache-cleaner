@@ -1,6 +1,6 @@
 {
-  "versionCode": 1,
+  "versionCode": 10000,
   "versionName": "1.0.0",
   "apkUrl": "https://github.com/slcantec-web/auto-cache-cleaner/releases/download/v1.0.0/auto-cache-cleaner.apk",
-  "notes": "Initial release"
+  "notes": "Release v1.0.0"
 }
