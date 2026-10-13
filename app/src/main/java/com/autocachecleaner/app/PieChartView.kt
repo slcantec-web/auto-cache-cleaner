@@ -28,20 +28,20 @@ class PieChartView @JvmOverloads constructor(
     }
     private val rect = RectF()
     private var slices: List<Slice> = emptyList()
-    private var holeColor: Int = 0xFFF8FAFC.toInt()
+    private var holeColor: Int = 0xFF0D1524.toInt()
 
     private val palette = intArrayOf(
-        0xFF2563EB.toInt(),
-        0xFF7C3AED.toInt(),
-        0xFF0891B2.toInt(),
-        0xFF059669.toInt(),
-        0xFFD97706.toInt(),
-        0xFFDC2626.toInt(),
-        0xFFDB2777.toInt(),
-        0xFF4F46E5.toInt(),
-        0xFF0D9488.toInt(),
-        0xFF65A30D.toInt(),
-        0xFF94A3B8.toInt() // Other
+        0xFF22D3EE.toInt(), // cyan
+        0xFFA78BFA.toInt(), // violet
+        0xFFF472B6.toInt(), // pink
+        0xFF34D399.toInt(), // green
+        0xFFFBBF24.toInt(), // amber
+        0xFF60A5FA.toInt(), // blue
+        0xFFFB7185.toInt(), // rose
+        0xFF2DD4BF.toInt(), // teal
+        0xFFC084FC.toInt(), // purple
+        0xFF4ADE80.toInt(), // lime
+        0xFF64748B.toInt()  // Other
     )
 
     fun setHoleColor(color: Int) {
@@ -81,7 +81,7 @@ class PieChartView @JvmOverloads constructor(
 
         val total = slices.sumOf { it.value }
         if (total <= 0 || slices.isEmpty()) {
-            emptyPaint.color = 0xFFCBD5E1.toInt()
+            emptyPaint.color = 0xFF1E2A40.toInt()
             canvas.drawOval(rect, emptyPaint)
             return
         }
@@ -94,7 +94,6 @@ class PieChartView @JvmOverloads constructor(
             start += sweep
         }
 
-        // Donut hole
         val cx = rect.centerX()
         val cy = rect.centerY()
         val holeR = (rect.width() / 2f) * 0.55f
