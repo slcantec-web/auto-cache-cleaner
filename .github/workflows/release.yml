@@ -1,16 +1,13 @@
 name: Release
 
-# Push a tag like v1.0.0 to build, sign, publish the APK and deploy the site.
+# Push a tag like v1.0.0 to build and sign the APK, publish it as a GitHub Release,
+# and update site/version.json (Cloudflare Pages redeploys from the repo).
 on:
   push:
     tags: ['v*']
 
 permissions:
   contents: write
-
-env:
-  # Must match the Cloudflare Pages project name (Direct Upload project).
-  CF_PAGES_PROJECT: auto-cache-cleaner
 
 jobs:
   release:
@@ -80,8 +77,14 @@ jobs:
             --title "Auto Cache Cleaner ${{ steps.ver.outputs.tag }}" \
             --notes-file "$RUNNER_TEMP/notes.txt"
 
-      - name: Write site/version.json
+      # Cloudflare Pages is connected to this repo, so committing version.json to main
+      # makes Cloudflare redeploy the site (and the update file the app reads).
+      - name: Publish site/version.json to main
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout -B main origin/main
           jq -n \
             --argjson code ${{ steps.ver.outputs.code }} \
             --arg name "${{ steps.ver.outputs.name }}" \
@@ -90,10 +93,6 @@ jobs:
             '{versionCode: $code, versionName: $name, apkUrl: $url, notes: $notes}' \
             > site/version.json
           cat site/version.json
-
-      - name: Deploy site to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy site --project-name=${{ env.CF_PAGES_PROJECT }} --branch=main
+          git add site/version.json
+          git commit -m "Release ${{ steps.ver.outputs.tag }}: update version.json" || echo "version.json unchanged"
+          git push origin main

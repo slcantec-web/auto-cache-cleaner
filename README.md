@@ -11,7 +11,7 @@ site/                 Landing page + version.json  -> Cloudflare Pages
 ## How updates work
 
 1. You push a tag such as `v1.2.0`.
-2. `release.yml` builds and signs the APK, creates a GitHub Release with `auto-cache-cleaner.apk`, writes `site/version.json`, and deploys `site/` to Cloudflare Pages.
+2. `release.yml` builds and signs the APK, creates a GitHub Release with `auto-cache-cleaner.apk`, writes `site/version.json` and commits it to `main`. Cloudflare Pages is connected to the repo, so it redeploys the site automatically.
 3. The app fetches `https://<project>.pages.dev/version.json`:
    - when the user taps **Check for update**, and
    - whenever the reminder notification fires (the notification then says "Update available").
@@ -40,11 +40,20 @@ Repo > Settings > Secrets and variables > Actions:
 | `KEYSTORE_PASSWORD` | keystore password |
 | `KEY_ALIAS` | `release` (or your alias) |
 | `KEY_PASSWORD` | key password |
-| `CLOUDFLARE_API_TOKEN` | token with *Cloudflare Pages: Edit* permission |
-| `CLOUDFLARE_ACCOUNT_ID` | your Cloudflare account ID |
 
-### 4. Create the Cloudflare Pages project
-Cloudflare dashboard > Workers & Pages > Create > Pages > **Direct Upload**, and name it `auto-cache-cleaner`. If you pick another name, change `CF_PAGES_PROJECT` at the top of `.github/workflows/release.yml` and the fallback URL in `app/build.gradle.kts`.
+No Cloudflare secrets are needed: Cloudflare Pages pulls from the repo itself.
+
+### 4. Connect Cloudflare Pages to the repo
+Cloudflare dashboard > Workers & Pages > Create > Pages > **Connect to Git**, pick this repo, and use:
+
+| Setting | Value |
+|---|---|
+| Production branch | `main` |
+| Framework preset | None |
+| Build command | *(leave empty)* |
+| Build output directory | `site` |
+
+Cloudflare only serves the `site/` folder; the Android app itself is built by GitHub Actions. The app reads `https://<project>.pages.dev/version.json`, so the project name must match the URL in `app/build.gradle.kts` (default `auto-cache-cleaner`).
 
 ### 5. Release
 ```bash
@@ -54,7 +63,8 @@ git push origin v1.0.0
 The tag message becomes the "notes" text shown in the app's update dialog.
 
 ## Notes
-- The landing page only goes live (and `version.json` only updates) when you push a release tag. To change the page, tag a new release.
+- The landing page redeploys on every push to `main`. `version.json` only changes when you push a release tag (the workflow commits it for you).
+- Every push to `main` also builds a debug APK in GitHub Actions (Actions tab > the run > Artifacts > `debug-apk`).
 - Android shows an "install unknown apps" prompt when users sideload the APK. If you later publish on Google Play, use Play's in-app updates instead of the APK link.
 - **Per-app cache scan:** **Scan all apps' cache** lists every launchable app with its cache size, largest first. It needs the user to grant *Usage access* once (the screen links straight to that setting). The scan is read-only: Android doesn't let regular apps clear other apps' caches, so the user ticks apps (or **Select all**) and taps **Clear selected**: the app then opens each selected app's system settings page one by one (it tries the Storage & cache page directly, and falls back to App info on phones that don't allow that), the user taps Clear cache and goes back, and the next app opens automatically. Tapping a single app opens just that one. The **Clear Cache** button on the main screen clears this app's own cache only. Keep your store listing and landing page wording consistent with that.
 - **Google Play:** if you ever publish there, the `PACKAGE_USAGE_STATS` permission needs a declaration in Play Console. It's not an issue for sideloaded APKs.
