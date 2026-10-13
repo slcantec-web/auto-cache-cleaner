@@ -30,6 +30,7 @@
     <string name="queue_done">All selected apps done. Chart updated.</string>
     <string name="cache_cleared_format">Freed %1$s</string>
     <string name="reminder_label">Reminder schedule</string>
+    <string name="reminder_period_hint">Schedule period</string>
     <string name="version_format">Version %1$s (build %2$d)</string>
     <string name="check_for_update">Check for update</string>
     <string name="checking_for_update">Checking for updates…</string>
