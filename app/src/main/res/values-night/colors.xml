@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#3B82F6</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="primary_container">#1E3A8A</color>
+    <color name="on_primary_container">#DBEAFE</color>
+    <color name="secondary">#94A3B8</color>
+    <color name="on_secondary">#0F172A</color>
+    <color name="secondary_container">#334155</color>
+    <color name="on_secondary_container">#E2E8F0</color>
+    <color name="surface">#0B1220</color>
+    <color name="on_surface">#F1F5F9</color>
+    <color name="surface_variant">#1E293B</color>
+    <color name="on_surface_variant">#94A3B8</color>
+    <color name="outline">#334155</color>
+    <color name="error">#F87171</color>
+    <color name="success">#34D399</color>
+    <color name="card_bg">#111827</color>
+    <color name="header_start">#1E40AF</color>
+    <color name="header_end">#1E3A8A</color>
+</resources>
