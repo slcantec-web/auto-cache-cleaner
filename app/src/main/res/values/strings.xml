@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Auto Cache Cleaner</string>
+    <string name="tagline">Clear cache on demand. Nothing runs in the background.</string>
+    <string name="clear_cache">Clear Cache</string>
+    <string name="open_storage_settings">Open system storage settings</string>
+    <string name="cache_size_format">This app\'s cache: %1$s</string>
+    <string name="scan_apps">Scan all apps\' cache</string>
+    <string name="app_caches_title">App cache sizes</string>
+    <string name="grant_usage_access_message">To see how much cache each app uses, allow Usage access for Auto Cache Cleaner. It stays on your device.</string>
+    <string name="grant_usage_access">Open Usage access settings</string>
+    <string name="scanning">Scanning apps…</string>
+    <string name="no_cache_found">No app cache found.</string>
+    <string name="app_caches_total_format">Total: %1$s across %2$d apps</string>
+    <string name="tap_to_clear_hint">Tap an app to open its settings, then choose Storage &amp; cache &gt; Clear cache.</string>
+    <string name="cache_cleared_format">Freed %1$s</string>
+    <string name="reminder_label">Reminder schedule</string>
+    <string name="version_format">Version %1$s (build %2$d)</string>
+    <string name="check_for_update">Check for update</string>
+    <string name="checking_for_update">Checking for updates…</string>
+    <string name="update_check_failed">Couldn\'t check for updates. Check your connection and try again.</string>
+    <string name="update_available_format">Update available: v%1$s</string>
+    <string name="up_to_date">You\'re up to date.</string>
+    <string name="update_available_title">Update available</string>
+    <string name="download">Download</string>
+    <string name="later">Later</string>
+</resources>

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Auto Cache Cleaner</title>
+  <meta name="description" content="Clear junk cache on demand with a single tap. No background services, no tracking.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="hero">
+    <div class="wrap">
+      <p class="badge">Android · Free · No tracking</p>
+      <h1>Effortless Storage Management.<br>Zero Background Drain.</h1>
+      <p class="sub">Clear junk cache on demand with a single tap. Set gentle custom reminders so your phone stays fast without draining battery in the background.</p>
+      <a id="download" class="btn" href="https://github.com/OWNER/REPO/releases/latest">Download for Android</a>
+      <p class="small">Latest version: <span id="version">…</span></p>
+    </div>
+  </header>
+
+  <main>
+    <section class="wrap">
+      <h2>Why Auto Cache Cleaner</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>On-demand only</h3>
+          <p>Runs only when you ask it to. No idle RAM or battery consumption.</p>
+        </article>
+        <article class="card">
+          <h3>See it before you clear it</h3>
+          <p>Scan to see how much cache every app is using, then jump straight to the ones worth clearing.</p>
+        </article>
+        <article class="card">
+          <h3>Custom reminders</h3>
+          <p>Choose a reminder every 3, 7, 14 or 30 days, or turn it off.</p>
+        </article>
+        <article class="card">
+          <h3>Privacy first</h3>
+          <p>No accounts, no analytics. The app only fetches a small public file to check for updates.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="wrap">
+      <h2>How it works</h2>
+      <ol class="steps">
+        <li><strong>Open the app</strong> when you need extra storage.</li>
+        <li><strong>Tap Clear Cache</strong> to reclaim your space.</li>
+        <li><strong>Pick a reminder schedule.</strong> The default is every 7 days.</li>
+        <li><strong>Close the app.</strong> It won't bother you until your next reminder.</li>
+      </ol>
+    </section>
+
+    <section class="wrap">
+      <h2>Installing</h2>
+      <p>Download the APK, open it, and allow installs from your browser or file manager when Android asks. The app tells you when a new version is out, and has a <strong>Check for update</strong> button on its main screen.</p>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <p class="small">© Auto Cache Cleaner · <a href="https://github.com/OWNER/REPO">Source on GitHub</a></p>
+  </footer>
+
+  <script>
+    // Show the latest released version and point the button at that APK.
+    fetch('/version.json', { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (v) {
+        document.getElementById('version').textContent = 'v' + v.versionName;
+        if (v.apkUrl && v.apkUrl.indexOf('https://') === 0) {
+          document.getElementById('download').href = v.apkUrl;
+        }
+      })
+      .catch(function () {
+        document.getElementById('version').textContent = 'see GitHub Releases';
+      });
+  </script>
+</body>
+</html>
