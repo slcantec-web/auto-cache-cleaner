@@ -1,0 +1,99 @@
+name: Release
+
+# Push a tag like v1.0.0 to build, sign, publish the APK and deploy the site.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+env:
+  # Must match the Cloudflare Pages project name (Direct Upload project).
+  CF_PAGES_PROJECT: auto-cache-cleaner
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Derive version from tag
+        id: ver
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VER="${TAG#v}"
+          if ! [[ "$VER" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Tag must look like v1.2.3 (got $TAG)"; exit 1
+          fi
+          IFS=. read -r MA MI PA <<< "$VER"
+          CODE=$((MA * 10000 + MI * 100 + PA))
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "name=$VER" >> "$GITHUB_OUTPUT"
+          echo "code=$CODE" >> "$GITHUB_OUTPUT"
+
+      - name: Read tag message (release notes)
+        id: notes
+        run: |
+          git fetch --force origin "+refs/tags/${GITHUB_REF_NAME}:refs/tags/${GITHUB_REF_NAME}"
+          NOTES="$(git for-each-ref --format='%(contents)' "refs/tags/${GITHUB_REF_NAME}" | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}')"
+          if [ -z "$NOTES" ]; then NOTES="Release ${GITHUB_REF_NAME}"; fi
+          printf '%s' "$NOTES" > "$RUNNER_TEMP/notes.txt"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.7
+
+      - name: Decode signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "Missing KEYSTORE_BASE64 secret"; exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+
+      - name: Build signed release APK
+        env:
+          KEYSTORE_PATH: ${{ runner.temp }}/release.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          gradle assembleRelease --stacktrace \
+            -PversionCode=${{ steps.ver.outputs.code }} \
+            -PversionName=${{ steps.ver.outputs.name }}
+          cp app/build/outputs/apk/release/app-release.apk auto-cache-cleaner.apk
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.ver.outputs.tag }}" auto-cache-cleaner.apk \
+            --title "Auto Cache Cleaner ${{ steps.ver.outputs.tag }}" \
+            --notes-file "$RUNNER_TEMP/notes.txt"
+
+      - name: Write site/version.json
+        run: |
+          jq -n \
+            --argjson code ${{ steps.ver.outputs.code }} \
+            --arg name "${{ steps.ver.outputs.name }}" \
+            --arg url "https://github.com/${{ github.repository }}/releases/download/${{ steps.ver.outputs.tag }}/auto-cache-cleaner.apk" \
+            --rawfile notes "$RUNNER_TEMP/notes.txt" \
+            '{versionCode: $code, versionName: $name, apkUrl: $url, notes: $notes}' \
+            > site/version.json
+          cat site/version.json
+
+      - name: Deploy site to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy site --project-name=${{ env.CF_PAGES_PROJECT }} --branch=main
