@@ -280,14 +280,35 @@
                     android:textColor="@color/on_surface_variant"
                     android:textSize="12sp" />
 
-                <Spinner
-                    android:id="@+id/reminderSpinner"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/reminderDropdownLayout"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/bg_spinner"
-                    android:popupBackground="@color/card_bg"
-                    android:spinnerMode="dropdown" />
+                    android:hint="@string/reminder_period_hint"
+                    app:boxBackgroundColor="@color/surface_variant"
+                    app:boxStrokeColor="@color/neon_cyan"
+                    app:boxStrokeWidth="1dp"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:endIconTint="@color/neon_cyan"
+                    app:hintTextColor="@color/neon_cyan"
+                    app:boxCornerRadiusTopStart="14dp"
+                    app:boxCornerRadiusTopEnd="14dp"
+                    app:boxCornerRadiusBottomStart="14dp"
+                    app:boxCornerRadiusBottomEnd="14dp">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/reminderDropdown"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:cursorVisible="false"
+                        android:textColor="@color/on_surface"
+                        android:textSize="15sp"
+                        android:paddingVertical="14dp" />
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <View
                     android:layout_width="match_parent"
