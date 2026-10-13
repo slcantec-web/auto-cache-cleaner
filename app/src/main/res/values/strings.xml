@@ -12,7 +12,13 @@
     <string name="scanning">Scanning apps…</string>
     <string name="no_cache_found">No app cache found.</string>
     <string name="app_caches_total_format">Total: %1$s across %2$d apps</string>
-    <string name="tap_to_clear_hint">Tap an app to open its settings, then choose Storage &amp; cache &gt; Clear cache.</string>
+    <string name="tap_to_clear_hint">Tick the apps you want and tap Clear selected. For each app, tap Clear cache (under Storage &amp; cache), then go back. You can also tap a single app.</string>
+    <string name="select_all">Select all</string>
+    <string name="select_app">Select app</string>
+    <string name="clear_selected_format">Clear selected (%1$d)</string>
+    <string name="stop">Stop</string>
+    <string name="queue_progress_format">App %1$d of %2$d: tap Clear cache, then go back. The next app opens automatically.</string>
+    <string name="queue_done">All selected apps done. Sizes refreshed.</string>
     <string name="cache_cleared_format">Freed %1$s</string>
     <string name="reminder_label">Reminder schedule</string>
     <string name="version_format">Version %1$s (build %2$d)</string>
