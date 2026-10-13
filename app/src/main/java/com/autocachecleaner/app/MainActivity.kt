@@ -15,13 +15,12 @@ import android.text.format.Formatter
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.ProgressBar
-import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -360,28 +359,21 @@ class MainActivity : AppCompatActivity() {
             ReminderScheduler.setInterval(this, ReminderScheduler.DEFAULT_DAYS)
         }
 
-        val spinner = findViewById<Spinner>(R.id.reminderSpinner)
-        val adapter = ArrayAdapter(this, R.layout.spinner_item, intervalLabels)
-        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
-        spinner.adapter = adapter
+        val dropdown = findViewById<AutoCompleteTextView>(R.id.reminderDropdown)
+        val adapter = ArrayAdapter(this, R.layout.spinner_dropdown_item, intervalLabels)
+        dropdown.setAdapter(adapter)
 
         val selected = intervalValues.indexOf(ReminderScheduler.currentInterval(this))
-        spinner.setSelection(if (selected >= 0) selected else 1)
+        val index = if (selected >= 0) selected else 1
+        dropdown.setText(intervalLabels[index], false)
 
-        var firstCallback = true
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                (view as? TextView)?.setTextColor(
-                    ContextCompat.getColor(this@MainActivity, R.color.on_surface)
-                )
-                if (firstCallback) {
-                    firstCallback = false
-                    return
-                }
-                ReminderScheduler.setInterval(this@MainActivity, intervalValues[position])
-            }
+        // Full, bright text in the closed field.
+        dropdown.setTextColor(ContextCompat.getColor(this, R.color.on_surface))
+        dropdown.setHintTextColor(ContextCompat.getColor(this, R.color.on_surface_variant))
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        dropdown.setOnItemClickListener { _, _, position, _ ->
+            ReminderScheduler.setInterval(this@MainActivity, intervalValues[position])
+            dropdown.setText(intervalLabels[position], false)
         }
     }
 
